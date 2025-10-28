@@ -2,7 +2,7 @@ import streamlit as st
 import requests
 import pandas as pd
 import plotly.express as px
-import plotly.graph_objects as go
+import base64
 
 
 # Custom CSS
@@ -66,8 +66,134 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+st.markdown(
+    """
+    <style>
+    /* Title Styling */
+    h1 {
+        position: relative;
+        font-size: 3.5em;
+        font-weight: 900;
+        text-align: center;
+        background: linear-gradient(90deg, #84A98C, #1DB954);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        text-shadow: 0px 0px 10px rgba(0,0,0,0.6);
+        margin-bottom: 0.5em;
+    }
+
+    /* Shine animation across the title */
+    h1::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(120deg, transparent, rgba(255,255,255,0.6), transparent);
+        animation: shine 3s infinite;
+    }
+
+    @keyframes shine {
+        0% { left: -100%; }
+        50% { left: 100%; }
+        100% { left: 100%; }
+    }
+    /* Subtitle Styling */
+    h2, h3, p {
+        text-align: center;
+        color: #CAD2C5 !important;
+        font-size: 1.1em;
+        font-style: italic;
+        opacity: 0.9;
+        margin-top: -0.5em;
+    }
+
+    /* Subtle minimal divider */
+    hr {
+        border: 0;
+        height: 1px;
+        background: rgba(255,255,255,0.25);
+        margin: 1em auto;
+        width: 50%;
+        border-radius: 2px;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
 
 # Settings
+
+# Function to load local image and convert it to base64
+def get_base64_of_bin_file(bin_file):
+    with open(bin_file, "rb") as f:
+        data = f.read()
+    return base64.b64encode(data).decode()
+
+# Pick your local image
+background_image = "images/pitch_pic.JPG"
+# Convert image to base64
+base64_image = get_base64_of_bin_file(background_image)
+
+st.markdown(
+    f"""
+    <style>
+    .stApp {{
+        background: linear-gradient(
+            rgba(255, 255, 255, 0.0),
+            rgba(255, 255, 255, 0.0)
+        ), url("data:image/png;base64,{base64_image}");
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+    }}
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+# Background
+st.markdown(
+    f"""
+    <style>
+    .stApp {{
+        background: linear-gradient(
+            rgba(0, 0, 0, 0.6),
+            rgba(0, 0, 0, 0.2)
+        ), url("data:image/png;base64,{base64_image}");
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+    }}
+
+    /* Title glow */
+    h1, h2, h3 {{
+        text-shadow: 2px 2px 8px rgba(0,0,0,0.8);
+        color: #ffffff !important;
+    }}
+
+    /* Predict button */
+    div.stButton > button {{
+        background: linear-gradient(90deg, #1DB954, #1ED760);
+        color: white;
+        font-size: 18px;
+        font-weight: bold;
+        border-radius: 30px;
+        padding: 0.6em 2em;
+    }}
+    div.stButton > button:hover {{
+        background: linear-gradient(90deg, #17a74a, #1db954);
+        transform: scale(1.05);
+    }}
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 
 API_URL = "https://future-stars-127911851563.europe-west1.run.app"
 earthy_colors = {
@@ -88,7 +214,7 @@ page = st.sidebar.radio("Navigation", ["Predict Player", "Analysis Dashboard"])
 if page == "Predict Player":
     st.markdown("# Are You the Next Future Star")
     st.markdown("Welcome to the **Future Stars Talent Predictor**! Enter your details below to check your potential.")
-    st.markdown("---")
+
 
     st.subheader("Player Input")
     with st.form("player_form"):
@@ -151,7 +277,6 @@ if page == "Predict Player":
             st.error(f"API Error {response.status_code}: {response.text}")
 
     # CSV Upload
-    st.markdown("---")
     st.subheader("Or upload a CSV file for multiple players")
     uploaded_file = st.file_uploader("Upload your CSV file", type=["csv"])
 
@@ -223,6 +348,7 @@ if page == "Analysis Dashboard":
 
             st.markdown("---")
 
+
             # Row 2: Top Future Star full width
             left_col, right_col = st.columns([1,2])
 
@@ -286,7 +412,7 @@ if page == "Analysis Dashboard":
 
                     st.plotly_chart(fig_bar, use_container_width=True)
 
-            # Column 2: Radar Chart for Top Future Star
+            # Column 2: Scatter Chart for Top Future Star
             with row3_col2:
                 if not fdf.empty:
                     fig_scatter = px.scatter(
