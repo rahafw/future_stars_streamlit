@@ -1,0 +1,6 @@
+[theme]
+primaryColor="#84A98C"            # soft green (buttons, highlights)
+backgroundColor="#2F3E46"         # dark background
+secondaryBackgroundColor="#354F52" # filter boxes, sidebar
+textColor="#CAD2C5"               # text
+font="sans serif"
