@@ -5,10 +5,18 @@ import plotly.express as px
 import base64
 
 
+def get_base64_of_bin_file(bin_file):
+    with open(bin_file, "rb") as f:
+        data = f.read()
+    return base64.b64encode(data).decode()
+
+background_image = "images/pitch_pic.JPG"
+base64_image = get_base64_of_bin_file(background_image)
+
 # Custom CSS
 st.markdown("""
 <style>
-/* Tabs styling */
+/* ---------------- Tabs ---------------- */
 .stTabs [data-baseweb="tab-list"] button[aria-selected="true"] {
     border-bottom: 3px solid #84A98C !important;
     color: #84A98C !important;
@@ -18,17 +26,23 @@ st.markdown("""
     color: #CAD2C5 !important;
 }
 
-/* Sidebar */
-[data-testid="stSidebar"] { min-width: 280px; max-width: 320px; background:#23343a; }
-[data-testid="stSidebar"] * { color: #CAD2C5 !important; }
+/* ---------------- Sidebar ---------------- */
+[data-testid="stSidebar"] {
+    min-width: 280px;
+    max-width: 320px;
+    background:#23343a;
+}
+[data-testid="stSidebar"] * {
+    color: #CAD2C5 !important;
+}
 
-/* Slider handle only */
+/* ---------------- Sliders ---------------- */
 .stSlider [role="slider"] {
     background: #84A98C !important;
     border: 2px solid #84A98C !important;
 }
 
-/* KPI Grid */
+/* ---------------- KPI Grid + Cards ---------------- */
 .kpi-grid{
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -36,10 +50,9 @@ st.markdown("""
   height: 100%;
 }
 
-/* KPI Card */
 .kpi-card{
   background: linear-gradient(145deg, #2F3E46, #354F52);
-  border-radius: 18px;
+  border-radius: 16px;
   padding: 20px;
   box-shadow: 0 8px 20px rgba(0,0,0,0.35);
   display:flex; flex-direction:column; justify-content:center; align-items:center;
@@ -49,151 +62,87 @@ st.markdown("""
 .kpi-value{ font-size:26px; font-weight:800; color:#84A98C; }
 .kpi-sub{ font-size:12px; color:#CAD2C5; opacity:.7; margin-top:4px; }
 
-/* Top Future Star Card */
-.top-card{
-  background: linear-gradient(145deg, #2F3E46, #354F52);
-  border-radius: 20px;
-  padding: 30px;
-  height: 100%;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.35);
-  display: flex; flex-direction: column; justify-content: center; align-items: center;
-  text-align: center;
+/* ---------------- Container Cards ---------------- */
+section[data-testid="stContainer"] {
+    border-radius: 16px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.05); /* very transparent white */
+    backdrop-filter: blur(6px);            /* blurred background effect */
+    box-shadow: 0px 4px 12px rgba(0,0,0,0.4);
+    margin-bottom: 1rem;
 }
-.top-name{ font-size:28px; font-weight:800; color:#84A98C; margin-bottom:15px; }
-.top-line{ font-size:18px; opacity:.85; margin-bottom:10px; color:#CAD2C5; }
-.top-prob{ font-size:26px; font-weight:700; color:#84A98C; margin-bottom:10px; }
-.top-metric{ font-size:16px; color:#CAD2C5; opacity:.8; }
+
+/* ---------------- Headings ---------------- */
+h3, h4 {
+    font-weight: 600;
+    color: #CAD2C5 !important;
+}
+
+/* ---------------- Title Styling ---------------- */
+h1 {
+    position: relative;
+    font-size: 3.5em;
+    font-weight: 900;
+    text-align: center;
+    background: linear-gradient(90deg, #84A98C, #1DB954);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-shadow: 0px 0px 10px rgba(0,0,0,0.6);
+    margin-bottom: 0.5em;
+}
+
+h1::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(120deg, transparent, rgba(255,255,255,0.6), transparent);
+    animation: shine 3s infinite;
+}
+
+@keyframes shine {
+    0% { left: -100%; }
+    50% { left: 100%; }
+    100% { left: 100%; }
+}
+
+h2, h3, p {
+    text-align: center;
+    color: #CAD2C5 !important;
+    font-size: 1.1em;
+    font-style: italic;
+    opacity: 0.9;
+    margin-top: -0.5em;
+}
+
+hr {
+    border: 0;
+    height: 1px;
+    background: rgba(255,255,255,0.25);
+    margin: 1em auto;
+    width: 50%;
+    border-radius: 2px;
+}
+
+/* ---------------- Predict button ---------------- */
+div.stButton > button {
+    background: linear-gradient(90deg, #1DB954, #1ED760);
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    border-radius: 30px;
+    padding: 0.6em 2em;
+}
+div.stButton > button:hover {
+    background: linear-gradient(90deg, #17a74a, #1db954);
+    transform: scale(1.05);
+}
 </style>
 """, unsafe_allow_html=True)
-
-st.markdown(
-    """
-    <style>
-    /* Title Styling */
-    h1 {
-        position: relative;
-        font-size: 3.5em;
-        font-weight: 900;
-        text-align: center;
-        background: linear-gradient(90deg, #84A98C, #1DB954);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        text-transform: uppercase;
-        letter-spacing: 2px;
-        text-shadow: 0px 0px 10px rgba(0,0,0,0.6);
-        margin-bottom: 0.5em;
-    }
-
-    /* Shine animation across the title */
-    h1::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(120deg, transparent, rgba(255,255,255,0.6), transparent);
-        animation: shine 3s infinite;
-    }
-
-    @keyframes shine {
-        0% { left: -100%; }
-        50% { left: 100%; }
-        100% { left: 100%; }
-    }
-    /* Subtitle Styling */
-    h2, h3, p {
-        text-align: center;
-        color: #CAD2C5 !important;
-        font-size: 1.1em;
-        font-style: italic;
-        opacity: 0.9;
-        margin-top: -0.5em;
-    }
-
-    /* Subtle minimal divider */
-    hr {
-        border: 0;
-        height: 1px;
-        background: rgba(255,255,255,0.25);
-        margin: 1em auto;
-        width: 50%;
-        border-radius: 2px;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
-
-
-# Settings
-
-# Function to load local image and convert it to base64
-def get_base64_of_bin_file(bin_file):
-    with open(bin_file, "rb") as f:
-        data = f.read()
-    return base64.b64encode(data).decode()
-
-# Pick your local image
-background_image = "images/pitch_pic.JPG"
-# Convert image to base64
-base64_image = get_base64_of_bin_file(background_image)
-
-st.markdown(
-    f"""
-    <style>
-    .stApp {{
-        background: linear-gradient(
-            rgba(255, 255, 255, 0.0),
-            rgba(255, 255, 255, 0.0)
-        ), url("data:image/png;base64,{base64_image}");
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-        background-attachment: fixed;
-    }}
-    </style>
-    """,
-    unsafe_allow_html=True
-)
-# Background
-st.markdown(
-    f"""
-    <style>
-    .stApp {{
-        background: linear-gradient(
-            rgba(0, 0, 0, 0.6),
-            rgba(0, 0, 0, 0.2)
-        ), url("data:image/png;base64,{base64_image}");
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-        background-attachment: fixed;
-    }}
-
-    /* Title glow */
-    h1, h2, h3 {{
-        text-shadow: 2px 2px 8px rgba(0,0,0,0.8);
-        color: #ffffff !important;
-    }}
-
-    /* Predict button */
-    div.stButton > button {{
-        background: linear-gradient(90deg, #1DB954, #1ED760);
-        color: white;
-        font-size: 18px;
-        font-weight: bold;
-        border-radius: 30px;
-        padding: 0.6em 2em;
-    }}
-    div.stButton > button:hover {{
-        background: linear-gradient(90deg, #17a74a, #1db954);
-        transform: scale(1.05);
-    }}
-    </style>
-    """,
-    unsafe_allow_html=True
-)
 
 API_URL = "https://future-stars-127911851563.europe-west1.run.app"
 earthy_colors = {
@@ -212,6 +161,29 @@ page = st.sidebar.radio("Navigation", ["Predict Player", "Analysis Dashboard"])
 
 # Page 1: Predict Player
 if page == "Predict Player":
+    # ---------------- Background ----------------
+    st.markdown(
+        f"""
+        <style>
+        .stApp {{
+            background: linear-gradient(
+                rgba(0, 0, 0, 0.6),
+                rgba(0, 0, 0, 0.2)
+            ), url("data:image/png;base64,{base64_image}");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }}
+
+        /* Title glow */
+        h1, h2, h3 {{
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.8);
+        }}
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
     st.markdown("# Are You the Next Future Star")
     st.markdown("Welcome to the **Future Stars Talent Predictor**! Enter your details below to check your potential.")
 
@@ -349,27 +321,20 @@ if page == "Analysis Dashboard":
             st.markdown("---")
 
 
-            # Row 2: Top Future Star full width
-            left_col, right_col = st.columns([1,2])
+            # Row 2: Top Future Star + Bar Chart
+
+            left_col, right_col = st.columns([1, 2])
 
             # Left: Top Future Star Card
             if not fdf.empty:
                 top_player = fdf.sort_values("Probability", ascending=False).iloc[0]
-                left_col.markdown(
-                    f"""
-                    <div class="top-card" style="height: 400px; display:flex; flex-direction:column; justify-content:center;">
-                        <div style="font-size:20px; font-weight:700; color:#CAD2C5; margin-bottom:12px; text-transform:uppercase; letter-spacing:1px;">
-                            Top Future Star
-                        </div>
-                        <div class="top-name">{top_player['Player']}</div>
-                        <div class="top-line">{top_player['Pos']} | {int(top_player['Age'])} yrs</div>
-                        <div class="top-prob">{top_player['Probability']:.2f}%</div>
-                        <div class="top-metric">{top_player['Key Metric']}</div>
-                    </div>
-                    """,
-                    unsafe_allow_html=True
-                )
 
+                with left_col.container(border=True, height="stretch", vertical_alignment="center"):
+                    st.markdown("### Top Future Star")
+                    st.markdown(f"**{top_player['Player']}**")
+                    st.markdown(f"{top_player['Pos']} | {int(top_player['Age'])} yrs")
+                    st.markdown(f"**{top_player['Probability']:.2f}%**")
+                    st.markdown(f"Key Metric: {top_player['Key Metric']}")
 
             # Right: Grouped Bar Chart
             by_pos_pred = fdf.groupby(["Pos","Prediction"]).size().reset_index(name="Count")
@@ -383,54 +348,56 @@ if page == "Analysis Dashboard":
                 paper_bgcolor=earthy_colors["dark"],
                 font=dict(color=earthy_colors["light"])
             )
-            right_col.plotly_chart(fig1, use_container_width=True)
+            with right_col.container(border=True, height="stretch"):
+                st.plotly_chart(fig1, use_container_width=True)
 
-            # --- Row 3: Top 5 Bar Chart + Radar ---
-            row3_col1, row3_col2 = st.columns([1.2, 1])  # adjust width ratio if needed
+
+            # Row 3: Top 5 Bar Chart + Scatter
+            row3_col1, row3_col2 = st.columns([1.2, 1])
 
             # Column 1: Top 5 Bar Chart
-            with row3_col1:
-                if not fdf.empty:
-                    top5 = fdf.sort_values("Probability", ascending=False).head(5)
+            if not fdf.empty:
+                top5 = fdf.sort_values("Probability", ascending=False).head(5)
 
-                    fig_bar = px.bar(
-                        top5,
-                        x="Probability",
-                        y="Player",
-                        orientation="h",
-                        text="Probability",
-                        title="Top 5 Future Stars by Probability",
-                        color_discrete_sequence=[earthy_colors["green"]]
-                    )
-                    fig_bar.update_traces(texttemplate='%{text:.2f}%', textposition='outside')
-                    fig_bar.update_layout(
-                        xaxis_title="Probability (%)",
-                        yaxis_title="",
-                        yaxis=dict(autorange="reversed"),
-                        height=400
-                    )
-
+                fig_bar = px.bar(
+                    top5,
+                    x="Probability",
+                    y="Player",
+                    orientation="h",
+                    text="Probability",
+                    title="Top 5 Future Stars by Probability",
+                    color_discrete_sequence=[earthy_colors["green"]]
+                )
+                fig_bar.update_traces(texttemplate='%{text:.2f}%', textposition='outside')
+                fig_bar.update_layout(
+                    xaxis_title="Probability (%)",
+                    yaxis_title="",
+                    yaxis=dict(autorange="reversed"),
+                    height=400
+                )
+                with row3_col1.container(border=True, height="stretch"):
                     st.plotly_chart(fig_bar, use_container_width=True)
 
-            # Column 2: Scatter Chart for Top Future Star
-            with row3_col2:
-                if not fdf.empty:
-                    fig_scatter = px.scatter(
-                        fdf,
-                        x="Age",
-                        y="Probability",
-                        color="Prediction",
-                        hover_name="Player",
-                        title="Age vs Probability",
-                        size="Probability",
-                        color_discrete_sequence=[earthy_colors["green"], earthy_colors["teal"]]
-                    )
+            # Column 2: Scatter Chart
+            if not fdf.empty:
+                fig_scatter = px.scatter(
+                    fdf,
+                    x="Age",
+                    y="Probability",
+                    color="Prediction",
+                    hover_name="Player",
+                    title="Age vs Probability",
+                    size="Probability",
+                    color_discrete_sequence=[earthy_colors["green"], earthy_colors["teal"]]
+                )
+                with row3_col2.container(border=True, height="stretch"):
                     st.plotly_chart(fig_scatter, use_container_width=True)
 
 
-        with tab2:
-            st.markdown("### All Players Stats")
-            st.dataframe(fdf, use_container_width=True)
+
+                    with tab2:
+                        st.markdown("### All Players Stats")
+                        st.dataframe(fdf, use_container_width=True)
 
     else:
         st.warning("No predictions loaded yet. Please upload CSV on 'Predict Player' page.")
