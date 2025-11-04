@@ -1,4 +1,4 @@
-# Future Stars Website — Interactive Scouting Dashboard
+# Future Stars Website 
 
 **Future Stars** is an interactive web application showcasing the results of the *Future Star* machine-learning model.  
 It provides football scouts and academies with a clean, visual interface to explore player potential and identify top talents.
