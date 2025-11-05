@@ -19,7 +19,7 @@ By analyzing uploaded player data, it highlights top performers and generates cl
 This web application is connected to the **Future Star (Model & API)** project,  
 which performs all the data processing, feature engineering, and prediction logic through a FastAPI backend.
 
-➡️ [Visit the main repository – Future Star (Model & API)](https://github.com/YOUR_USERNAME/future_star)
+➡️ [Visit the main repository – Future Star (Model & API)](https://github.com/rahafw/future_stars)
 
 ---
 
